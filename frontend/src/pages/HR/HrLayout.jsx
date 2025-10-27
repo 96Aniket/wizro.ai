@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
 
 const HrLayout = () => {
-  const { getPmNavigationItems } = useAuth();
+  const { getHrNavigationItems } = useAuth();
 
   const [currentTime, _setCurrentTime] = useState('00:00:00');
 
@@ -21,7 +21,7 @@ const HrLayout = () => {
               KosquTrack
             </Link>
             <div className="flex items-center space-x-6 text-sm">
-              {getPmNavigationItems().map((link) => (
+              {getHrNavigationItems().map((link) => (
                 <NavLink
                   key={link.id}
                   to={link.href}
