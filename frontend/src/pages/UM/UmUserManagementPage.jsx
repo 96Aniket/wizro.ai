@@ -1,167 +1,364 @@
-import { Search, Plus, ChevronDown, Folder } from 'lucide-react';
-import React, { useState } from 'react';
-
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export default function UmUserManagementPage() {
   const [isOpen, setIsOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [confirmUpdate, setConfirmUpdate] = useState(false);
+  const [isRoleOpen, setIsRoleOpen] = useState(false);
 
-  const teamMembers = [
-    {
-      name: 'Nazneen Pinjari',
-      role: 'founder',
-      avatar: 'N',
-      projects: '3',
-      ratePerHour: '$0',
-      email: 'fsali3636@gmail.com',
-      permissionRole: 'Owner',
-    },
-  ];
+  const [roleForm, setRoleForm] = useState({
+    s_role_name: "",
+  });
+
+  const [form, setForm] = useState({
+    n_user_id: null,
+    s_full_name: "",
+    s_email: "",
+    s_role: "",
+    d_joining_date: "",
+  });
+
+  const fetchUsers = async () => {
+    const res = await fetch("http://localhost:5000/user/getAll");
+    const data = await res.json();
+    setUsers(data);
+  };
+
+const handleAddRole = async () => {
+  if (!roleForm.s_role_name.trim()) {
+    alert("Role name is required");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/role/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        s_role_name: roleForm.s_role_name, 
+      }),
+    });
+
+    const data = await res.json(); 
+
+    if (!res.ok) {
+      alert(data.error || "Failed to add role");
+      return;
+    }
+
+    console.log("Role Added:", data);
+
+    setRoleForm({ s_role_name: "" });
+    setIsRoleOpen(false);
+    alert("Role added successfully");
+
+  } catch (error) {
+    console.error("Error adding role:", error);
+  }
+};
+
+
+
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const saveUser = async () => {
+    const url = isEdit
+      ? "http://localhost:5000/user/update"
+      : "http://localhost:5000/user/create";
+
+    const method = isEdit ? "PUT" : "POST";
+
+    await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...form,
+        n_user_id: form.n_user_id, // 🔥 REQUIRED
+      }),
+    });
+
+    setIsOpen(false);
+    setIsEdit(false);
+    setForm({
+      s_full_name: "",
+      s_email: "",
+      s_role: "",
+      d_joining_date: "",
+    });
+
+    fetchUsers();
+
+  };
+
+  const deleteUser = async (id) => {
+    await fetch(`http://localhost:5000/user/delete/${id}`, {
+      method: "DELETE",
+    });
+
+    fetchUsers();
+  };
+
+
+  const openEdit = (user) => {
+  setForm({
+    n_user_id: user.n_user_id,
+    s_full_name: user.s_full_name || "",
+    s_email: user.s_email || "",
+    s_role: user.s_role || "",
+    d_joining_date: user.d_joining_date
+      ? user.d_joining_date.slice(0, 10)
+      : "",
+  });
+
+  setIsEdit(true);
+  setIsOpen(true);
+};
+
+  
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-foreground)]">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 bg-[var(--color-card)] border-b border-[var(--color-border)]">
-        <h2 className="text-lg font-semibold">Team</h2>
+    <div className="min-h-screen bg-[var(--color-background)] p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Team Members</h2>
 
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-30 h-8 border border-[var(--color-border)] rounded-lg flex items-center justify-center hover:border-[var(--color-muted-foreground)] transition-colors">
-              <Plus className="w-4 h-4 text-[var(--color-muted-foreground)]" /> Create User
+        <div className="flex items-center gap-2">
+        <Button
+          onClick={() => {
+            setForm({
+              n_user_id: null,
+              s_full_name: "",
+              s_email: "",
+              s_role: "",
+              d_joining_date: "",
+            });
+            setIsEdit(false);
+            setIsOpen(true);
+          }}
+        >
+          <Plus className="w-4 h-4 mr-1" />
+          Add User
+        </Button>
+
+        <Button onClick={() => setIsRoleOpen(true)}>
+          <Plus className="w-4 h-4 mr-1" />
+          Add Role
+        </Button>
+
+      </div>
+
+
+      </div>
+
+      <div className="w-full overflow-x-auto">
+        <div className="grid grid-cols-7 gap-4 font-semibold border-b pb-2">
+          <div>Name</div>
+          <div>Role</div>
+          <div>Email</div>
+          <div>Joining Date</div>
+          <div>Status</div>
+          <div>Actions</div>
+        </div>
+
+        {users.map((user) => (
+          <div
+            key={user.n_user_id}
+            className="grid grid-cols-7 gap-4 items-center py-2 border-b"
+          >
+            <div>{user.s_full_name}</div>
+            <div>{user.s_role}</div>
+            <div>{user.s_email}</div>
+            <div>
+              {user.d_joining_date
+                ? new Date(user.d_joining_date).toLocaleDateString()
+                : "-"}
+            </div>
+            <div>
+              <Badge className="bg-green-500 text-white">Active</Badge>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => openEdit(user)}>
+                <Pencil size={16} />
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDeleteId(user.n_user_id); // open confirm dialog
+                }}
+              >
+                <Trash2 size={16} />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Dialog open={isRoleOpen} onOpenChange={setIsRoleOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Role</DialogTitle>
+          </DialogHeader>
+
+          <div className="grid gap-4 mt-4">
+            <Input
+              placeholder="Enter Role Name"
+              value={roleForm.s_role_name}
+              onChange={(e) =>
+                setRoleForm({ ...roleForm, s_role_name: e.target.value })
+              }
+            />
+
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsRoleOpen(false)}
+              >
+                Cancel
+              </Button>
+
+              <Button onClick={handleAddRole}>
+                Save Role
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+
+      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this user?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setDeleteId(null)}>
+              Cancel
             </Button>
-          </DialogTrigger>
 
-          <DialogContent className="bg-[var(--color-card)] border-[var(--color-border)] text-[var(--color-foreground)] max-w-md p-0">
-            {/* Modal Header */}
-            <DialogHeader className="px-6 py-4 border-b border-[var(--color-border)]">
-              <div className="flex items-center justify-between">
-                <DialogTitle className="text-lg font-semibold">Create a project</DialogTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsOpen(false)}
-                  className="text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] h-6 w-6 p-0"
-                />
-              </div>
-              <p className="text-sm text-[var(--color-muted-foreground)] mt-2">
-                A project represents a team with its own tasks, workflows, and settings.
-              </p>
-            </DialogHeader>
-
-            {/* Modal Content */}
-            <div className="px-6 py-4 space-y-4">
-              {/* Group of project */}
-              <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium text-[var(--color-muted-foreground)] w-20 flex-shrink-0">
-                  Group of project
-                </span>
-                <Button
-                  variant="outline"
-                  className="flex-1 justify-start bg-transparent border-[var(--color-border)] text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)]"
-                >
-                  <Folder className="w-4 h-4 mr-2" />
-                  Ungrouped
-                </Button>
-              </div>
-
-              {/* Status */}
-              <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium text-[var(--color-muted-foreground)] w-20 flex-shrink-0">
-                  Status
-                </span>
-                <Badge className="bg-[var(--color-primary)] text-white px-3 py-1">TO DO</Badge>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-[var(--color-border)] flex justify-end items-center">
-              <div className="flex space-x-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsOpen(false)}
-                  className="border-[var(--color-border)] text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)]"
-                >
-                  Cancel
-                </Button>
-                <Button className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white">
-                  Next step
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Content */}
-      <div className="px-6 py-4">
-        <div className="mb-6">
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--color-muted-foreground)] h-4 w-4" />
-              <Input
-                placeholder="Employee search"
-                className="pl-10 bg-[var(--color-input)] border-[var(--color-border)] text-[var(--color-foreground)] placeholder-[var(--color-muted-foreground)]"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-6 gap-4 text-sm text-[var(--color-muted-foreground)] font-medium mb-4">
-            <div>Projects</div>
-            <div>Tasks priority</div>
-            <div>Rate per hour</div>
-            <div>Contacts</div>
-            <div>Permission role</div>
-            <div></div>
-          </div>
-        </div>
-
-        {/* Department */}
-        <div className="mb-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <ChevronDown className="h-4 w-4 text-[var(--color-muted-foreground)]" />
-            <span className="text-[var(--color-foreground)] font-medium">No department</span>
-            <Badge variant="secondary" className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
-              1
-            </Badge>
-          </div>
-
-          {teamMembers.map((member, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-6 gap-4 items-center py-3 hover:bg-[var(--color-muted)] rounded-lg"
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                await fetch(`http://localhost:5000/user/delete/${deleteId}`, {
+                  method: "DELETE",
+                });
+                setDeleteId(null);
+                fetchUsers();
+              }}
             >
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-sm font-medium text-[var(--color-primary-foreground)]">
-                  {member.avatar}
-                </div>
-                <div>
-                  <div className="text-[var(--color-foreground)] font-medium">{member.name}</div>
-                  <div className="text-[var(--color-muted-foreground)] text-sm">{member.role}</div>
-                </div>
-              </div>
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-              <div className="flex items-center space-x-1">
-                <Badge variant="secondary" className="bg-[var(--color-primary)] text-[var(--color-primary-foreground)]">
-                  {member.projects}
-                </Badge>
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 rounded-full bg-[var(--color-destructive)]"></div>
-                  <div className="w-2 h-2 rounded-full bg-[var(--color-chart-4)]"></div>
-                  <div className="w-2 h-2 rounded-full bg-[var(--color-chart-2)]"></div>
-                </div>
-              </div>
 
-              <div className="text-[var(--color-foreground)]">{member.ratePerHour}</div>
-              <div className="text-[var(--color-muted-foreground)]">{member.email}</div>
-              <div className="text-[var(--color-foreground)]">{member.permissionRole}</div>
-              <div></div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Dialog open={confirmUpdate} onOpenChange={setConfirmUpdate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Update</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to update this user?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-end gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmUpdate(false)}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                await saveUser();
+                setConfirmUpdate(false);
+              }}
+            >
+              Yes, Update
+            </Button>
+
+          </div>
+        </DialogContent>
+      </Dialog>
+
+
+      {/* MODAL */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{isEdit ? "Update User" : "Create User"}</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <Input
+              placeholder="Full Name"
+              value={form.s_full_name}
+              onChange={(e) =>
+                setForm({ ...form, s_full_name: e.target.value })
+              }
+            />
+            <Input
+              placeholder="Email"
+              value={form.s_email}
+              onChange={(e) =>
+                setForm({ ...form, s_email: e.target.value })
+              }
+            />
+            <Input
+              placeholder="Role"
+              value={form.s_role}
+              onChange={(e) =>
+                setForm({ ...form, s_role: e.target.value })
+              }
+            />
+            <Input
+              type="date"
+              value={form.d_joining_date}
+              onChange={(e) =>
+                setForm({ ...form, d_joining_date: e.target.value })
+              }
+            />
+            <Button
+              onClick={() => {
+                if (isEdit) {
+                  setConfirmUpdate(true);   // open confirmation
+                } else {
+                  saveUser(); // create user directly
+                }
+              }}
+            >
+              {isEdit ? "Update User" : "Create User"}
+            </Button>
+
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

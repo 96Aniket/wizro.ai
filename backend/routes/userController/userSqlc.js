@@ -90,4 +90,109 @@ export default {
 
     return obj;
   },
+  getAllUsers() {
+    return {
+      text: `SELECT * FROM tbl_users_management ORDER BY n_user_id DESC`,
+      values: [],
+    };
+  },
+
+  createUser(data) {
+   return {
+  queryString: `
+    INSERT INTO tbl_users_management 
+    (s_full_name, s_email, s_role, d_joining_date)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+  `,
+  arr: [data.s_full_name, data.s_email, data.s_role, data.d_joining_date,],
+};
+
+  },
+
+  // deleteUser(id) {
+  //   return {
+  //     text: `DELETE FROM tbl_users_management WHERE n_user_id = $1`,
+  //     values: [id],
+  //   };
+  // },
+  getAllUsers() {
+  return {
+    queryString: `SELECT * FROM tbl_users_management ORDER BY n_user_id DESC`,
+    arr: [],
+  };
+},
+updateUserDetails(data) {
+  return {
+    queryString: `
+      UPDATE tbl_users_management
+      SET 
+        s_full_name = $1,
+        s_email = $2,
+        s_role = $3,
+        d_joining_date = $4
+      WHERE n_user_id = $5
+      RETURNING *;
+    `,
+    arr: [
+      data.s_full_name,
+      data.s_email,
+      data.s_role,
+      data.d_joining_date,
+      data.n_user_id
+    ],
+  };
+},
+deleteUserById(data) {
+  return {
+    queryString: `DELETE FROM tbl_users_management WHERE n_user_id = $1`,
+    arr: [data.n_user_id],
+  };
+},
+
+createRole(data) {
+  return {
+    queryString: `
+      INSERT INTO tbl_role_master (s_role_name)
+      VALUES ($1)
+      RETURNING *;
+    `,
+    arr: [data.s_role_name],
+  };
+}
+
+
+
+  // getAllRoles() {
+  //   return {
+  //     queryString: `
+  //       SELECT n_id, s_role_name
+  //       FROM tbl_role_master
+  //       ORDER BY n_id ASC;
+  //     `,
+  //   };
+  // },
+
+  // updateRole(data) {
+  //   return {
+  //     queryString: `
+  //       UPDATE tbl_role_master
+  //       SET s_role_name = $1
+  //       WHERE n_id = $2
+  //       RETURNING *;
+  //     `,
+  //     arr: [data.s_role_name, data.n_id],
+  //   };
+  // },
+
+  // deleteRole(data) {
+  //   return {
+  //     queryString: `
+  //       DELETE FROM tbl_role_master
+  //       WHERE n_id = $1;
+  //     `,
+  //     arr: [data.n_id],
+  //   };
+  // },
+
 };
