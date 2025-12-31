@@ -344,90 +344,120 @@ async deleteUser(req, res) {
 },
 
 async createRole(req, res) {
-  try {
-    const { s_role_name } = req.body;
+    try {
+      const { s_role_name } = req.body;
 
-    // Validation
+      if (!s_role_name || !s_role_name.trim()) {
+        return res.status(400).json({ error: "Role name is required" });
+      }
+
+      const query = userSqlc.createRole({
+        s_role_name: s_role_name.trim(),
+      });
+
+      const result = await dbqueryexecute.executeSelectObj(query, pool);
+
+      return res.status(201).json({
+        message: "Role created successfully",
+        data: result,
+      });
+    } catch (err) {
+      console.error("CREATE ROLE ERROR:", err);
+      return res.status(500).json({ error: "Failed to create role" });
+    }
+  },
+
+async getRoles(req, res) {
+  try {
+    const result = await dbqueryexecute.executeSelectObj(
+      userSqlc.getAllRoles(),
+      pool
+    );
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("GET ROLES ERROR:", err);
+    res.status(500).json({ error: "Failed to fetch roles" });
+  }
+},
+
+async updateRole(req, res) {
+  try {
+    const { n_id, s_role_name } = req.body;
+
+    if (!n_id) {
+      return res.status(400).json({ error: "Role ID is required" });
+    }
+
     if (!s_role_name || !s_role_name.trim()) {
       return res.status(400).json({ error: "Role name is required" });
     }
 
-    // Build query
-    const query = roleSqlc.createRole({
+    // First, get the old role name
+    const getRoleQuery = {
+      queryString: `SELECT s_role_name FROM tbl_role_master WHERE n_id = $1`,
+      arr: [n_id],
+    };
+    
+    const oldRoleResult = await dbqueryexecute.executeSelectObj(getRoleQuery, pool);
+    
+    if (!oldRoleResult || oldRoleResult.length === 0) {
+      return res.status(404).json({ error: "Role not found" });
+    }
+
+    const oldRoleName = oldRoleResult[0].s_role_name;
+
+    // Update the role in role_master
+    const updateRoleQuery = userSqlc.updateRole({
+      n_id,
       s_role_name: s_role_name.trim(),
     });
 
-    // Execute query
-    const result = await dbqueryexecute.executeSelectObj(query);
+    await dbqueryexecute.executeSelectObj(updateRoleQuery, pool);
 
-    return res.status(201).json({
-      message: "Role created successfully",
-      data: result,
+    // Update all users who have the old role name
+    if (oldRoleName && oldRoleName !== s_role_name.trim()) {
+      const updateUsersQuery = {
+        queryString: `
+          UPDATE tbl_users_management
+          SET s_role = $1
+          WHERE s_role = $2
+        `,
+        arr: [s_role_name.trim(), oldRoleName],
+      };
+
+      await dbqueryexecute.executeSelectObj(updateUsersQuery, pool);
+    }
+
+    res.status(200).json({
+      message: "Role updated successfully and user records updated",
     });
   } catch (err) {
-    console.error("CREATE ROLE ERROR:", err);
-    return res.status(500).json({ error: "Failed to create role" });
+    console.error("UPDATE ROLE ERROR:", err);
+    res.status(500).json({ 
+      error: "Failed to update role",
+      details: err.message 
+    });
   }
-}
+},
 
+async deleteRole(req, res) {
+  try {
+    const { id } = req.params;
 
+    if (!id) {
+      return res.status(400).json({ error: "Role ID is required" });
+    }
 
-  // async getRoles(req, res) {
-  //   try {
-  //     const result = await dbqueryexecute.executeSelectObj(
-  //       roleSqlc.getAllRoles()
-  //     );
+    const query = userSqlc.deleteRole({ n_id: id });
 
-  //     res.status(200).json(result);
-  //   } catch (err) {
-  //     console.error("GET ROLES ERROR:", err);
-  //     res.status(500).json({ error: "Failed to fetch roles" });
-  //   }
-  // },
+    await dbqueryexecute.executeSelectObj(query, pool);
 
-  // async updateRole(req, res) {
-  //   try {
-  //     const { n_id, s_role_name } = req.body;
-
-  //     if (!n_id) {
-  //       return res.status(400).json({ error: "Role ID is required" });
-  //     }
-
-  //     const query = roleSqlc.updateRole({
-  //       n_id,
-  //       s_role_name,
-  //     });
-
-  //     const result = await dbqueryexecute.executeSelectObj(query);
-
-  //     res.status(200).json({
-  //       message: "Role updated successfully",
-  //       data: result,
-  //     });
-  //   } catch (err) {
-  //     console.error("UPDATE ROLE ERROR:", err);
-  //     res.status(500).json({ error: "Failed to update role" });
-  //   }
-  // },
-
-  // async deleteRole(req, res) {
-  //   try {
-  //     const { id } = req.params;
-
-  //     if (!id) {
-  //       return res.status(400).json({ error: "Role ID is required" });
-  //     }
-
-  //     const query = roleSqlc.deleteRole({ n_id: id });
-
-  //     await dbqueryexecute.executeSelectObj(query);
-
-  //     res.status(200).json({ message: "Role deleted successfully" });
-  //   } catch (err) {
-  //     console.error("DELETE ROLE ERROR:", err);
-  //     res.status(500).json({ error: "Failed to delete role" });
-  //   }
-  // },
-
+    res.status(200).json({ message: "Role deleted successfully" });
+  } catch (err) {
+    console.error("DELETE ROLE ERROR:", err);
+    res.status(500).json({ error: "Failed to delete role" });
+  }
+},
 
 };

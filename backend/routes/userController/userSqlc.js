@@ -159,40 +159,41 @@ createRole(data) {
     `,
     arr: [data.s_role_name],
   };
-}
+},
 
 
 
-  // getAllRoles() {
-  //   return {
-  //     queryString: `
-  //       SELECT n_id, s_role_name
-  //       FROM tbl_role_master
-  //       ORDER BY n_id ASC;
-  //     `,
-  //   };
-  // },
+getAllRoles() {
+  return {
+    queryString: `
+      SELECT n_id, s_role_name
+      FROM tbl_role_master
+      ORDER BY n_id ASC;
+    `,
+    arr: [],
+  };
+},
 
-  // updateRole(data) {
-  //   return {
-  //     queryString: `
-  //       UPDATE tbl_role_master
-  //       SET s_role_name = $1
-  //       WHERE n_id = $2
-  //       RETURNING *;
-  //     `,
-  //     arr: [data.s_role_name, data.n_id],
-  //   };
-  // },
+updateRole(data) {
+  return {
+    queryString: `
+      UPDATE tbl_role_master
+      SET s_role_name = $1
+      WHERE n_id = $2
+      RETURNING *;
+    `,
+    arr: [data.s_role_name, data.n_id],
+  };
+},
 
-  // deleteRole(data) {
-  //   return {
-  //     queryString: `
-  //       DELETE FROM tbl_role_master
-  //       WHERE n_id = $1;
-  //     `,
-  //     arr: [data.n_id],
-  //   };
-  // },
+deleteRole(data) {
+  return {
+    queryString: `
+      DELETE FROM tbl_role_master
+      WHERE n_id = $1;
+    `,
+    arr: [data.n_id],
+  };
+},
 
 };

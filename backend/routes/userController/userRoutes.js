@@ -17,11 +17,10 @@ userRouter.get("/getAll", userController.getUsers);
 userRouter.post("/create", userController.createUser);
 userRouter.delete("/delete/:id", userController.deleteUser);
 userRouter.put("/update", userController.updateUserDetails);
-// userRouter.delete("/delete/:id", userController.deleteUserDetails);
 
-userRouter.post("/create", userController.createRole);
-// userRouter.get("/getAll", roleController.getRoles);
-// userRouter.put("/update", roleController.updateRole);
-// userRouter.delete("/delete/:id", roleController.deleteRole);
+userRouter.post("/role/create", userController.createRole);
+userRouter.get("/role/getAll", userController.getRoles);
+userRouter.put("/role/update", userController.updateRole);
+userRouter.delete("/role/delete/:id", userController.deleteRole);
 
 export default userRouter;
