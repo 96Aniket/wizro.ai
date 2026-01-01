@@ -234,20 +234,37 @@ export default function UmUserManagementPage() {
     }
   };
 
-  const openEdit = (user) => {
-    setForm({
-      n_user_id: user.n_user_id,
-      s_full_name: user.s_full_name || "",
-      s_email: user.s_email || "",
-      s_role: user.s_role || "",
-      d_joining_date: user.d_joining_date
-        ? user.d_joining_date.slice(0, 10)
-        : "",
-    });
-
-    setIsEdit(true);
-    setIsOpen(true);
+const openEdit = (user) => {
+  // Helper function to format date correctly without timezone issues
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    
+    // Split the date string directly if it's in YYYY-MM-DD format
+    if (typeof dateString === 'string' && dateString.includes('-')) {
+      const datePart = dateString.split('T')[0]; // Get only date part, ignore time
+      return datePart; // Returns YYYY-MM-DD
+    }
+    
+    // Fallback for other formats
+    const date = new Date(dateString);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
   };
+
+  setForm({
+    n_user_id: user.n_user_id,
+    s_full_name: user.s_full_name || "",
+    s_email: user.s_email || "",
+    s_role: user.s_role || "",
+    d_joining_date: formatDateForInput(user.d_joining_date),
+  });
+
+  setIsEdit(true);
+  setIsOpen(true);
+};
 
     if (!isAdmin() && !isHR()) {
     return (
@@ -320,7 +337,7 @@ export default function UmUserManagementPage() {
             <div>{user.s_email}</div>
             <div>
               {user.d_joining_date
-                ? new Date(user.d_joining_date).toLocaleDateString()
+                ? user.d_joining_date.split('T')[0].split('-').reverse().join('-')
                 : "-"}
             </div>
             <div>

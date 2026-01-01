@@ -97,31 +97,42 @@ export default {
     };
   },
 
-  createUser(data) {
-   return {
-  queryString: `
-    INSERT INTO tbl_users_management 
-    (s_full_name, s_email, s_role, d_joining_date)
-    VALUES ($1, $2, $3, $4)
-    RETURNING *;
-  `,
-  arr: [data.s_full_name, data.s_email, data.s_role, data.d_joining_date,],
-};
-
-  },
-
-  // deleteUser(id) {
-  //   return {
-  //     text: `DELETE FROM tbl_users_management WHERE n_user_id = $1`,
-  //     values: [id],
-  //   };
-  // },
-  getAllUsers() {
+createUser(data) {
   return {
-    queryString: `SELECT * FROM tbl_users_management ORDER BY n_user_id DESC`,
+    queryString: `
+      INSERT INTO tbl_users_management 
+      (s_full_name, s_email, s_role, d_joining_date)
+      VALUES ($1, $2, $3, $4::date)
+      RETURNING 
+        n_user_id,
+        s_full_name,
+        s_email,
+        s_role,
+        TO_CHAR(d_joining_date, 'YYYY-MM-DD') as d_joining_date;
+    `,
+    arr: [data.s_full_name, data.s_email, data.s_role, data.d_joining_date],
+  };
+},
+
+getAllUsers() {
+  return {
+    queryString: `
+      SELECT 
+        n_user_id,
+        s_full_name,
+        s_email,
+        s_role,
+        TO_CHAR(d_joining_date, 'YYYY-MM-DD') as d_joining_date,
+        n_status,
+        created_at,
+        updated_at
+      FROM tbl_users_management 
+      ORDER BY n_user_id DESC
+    `,
     arr: [],
   };
 },
+
 updateUserDetails(data) {
   return {
     queryString: `
@@ -130,9 +141,14 @@ updateUserDetails(data) {
         s_full_name = $1,
         s_email = $2,
         s_role = $3,
-        d_joining_date = $4
+        d_joining_date = $4::date
       WHERE n_user_id = $5
-      RETURNING *;
+      RETURNING 
+        n_user_id,
+        s_full_name,
+        s_email,
+        s_role,
+        TO_CHAR(d_joining_date, 'YYYY-MM-DD') as d_joining_date;
     `,
     arr: [
       data.s_full_name,
