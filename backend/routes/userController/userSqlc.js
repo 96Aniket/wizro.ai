@@ -212,4 +212,42 @@ deleteRole(data) {
   };
 },
 
+getAllPermissions() {
+    return {
+      queryString: "SELECT * FROM tbl_permission_master ORDER BY n_id ASC;",
+      arr: [],
+    };
+  },
+
+  createPermission(data) {
+    return {
+      queryString: `
+        INSERT INTO tbl_permission_master (s_permission_name)
+        VALUES ($1)
+        RETURNING *;
+      `,
+      arr: [data.s_permission_name],
+    };
+  },
+
+  updatePermission(data) {
+    return {
+      queryString: `
+        UPDATE tbl_permission_master
+        SET s_permission_name = $1
+        WHERE n_id = $2
+        RETURNING *;
+      `,
+      arr: [data.s_permission_name, data.n_id],
+    };
+  },
+
+  deletePermission(id) {
+    return {
+      queryString: `DELETE FROM tbl_permission_master WHERE n_id = $1`,
+      arr: [id],
+    };
+  },
+
+
 };

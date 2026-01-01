@@ -460,4 +460,53 @@ async deleteRole(req, res) {
   }
 },
 
+async getAllPermissions(req, res) {
+  try {
+    const result = await dbqueryexecute.executeSelectObj(
+      userSqlc.getAllPermissions(),
+      pool
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("GET PERMISSIONS ERROR:", err);
+    res.status(500).json({ error: "Failed to fetch permissions" });
+  }
+},
+
+async createPermission(req, res) {
+  try {
+    const { s_permission_name } = req.body;
+
+    if (!s_permission_name || !s_permission_name.trim()) {
+      return res.status(400).json({ error: "Permission name required" });
+    }
+
+    const result = await dbqueryexecute.executeSelectObj(
+      userSqlc.createPermission({ s_permission_name: s_permission_name.trim() }),
+      pool
+    );
+
+    res.status(201).json(result[0]);
+  } catch (err) {
+    console.error("CREATE PERMISSION ERROR:", err);
+    res.status(500).json({ error: "Failed to create permission" });
+  }
+},
+
+async deletePermission(req, res) {
+  try {
+    const { id } = req.params;
+
+    await dbqueryexecute.executeSelectObj(
+      userSqlc.deletePermission(id),
+      pool
+    );
+
+    res.status(200).json({ message: "Permission deleted successfully" });
+  } catch (err) {
+    console.error("DELETE PERMISSION ERROR:", err);
+    res.status(500).json({ error: "Failed to delete permission" });
+  }
+},
+
 };

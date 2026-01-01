@@ -48,7 +48,6 @@ export default function UmUserManagementPage() {
       const res = await fetch("http://localhost:5000/user/role/getAll");
       const data = await res.json();
       setRoles(Array.isArray(data) ? data : []);
-      console.log("Roles fetched:", data);
     } catch (error) {
       console.error("Error fetching roles:", error);
       setRoles([]);

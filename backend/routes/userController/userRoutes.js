@@ -23,4 +23,9 @@ userRouter.get("/role/getAll", userController.getRoles);
 userRouter.put("/role/update", userController.updateRole);
 userRouter.delete("/role/delete/:id", userController.deleteRole);
 
+userRouter.get("/permission/getAll", userController.getAllPermissions);
+userRouter.post("/permission/create", userController.createPermission);
+userRouter.delete("/permission/delete/:id", userController.deletePermission);
+
+
 export default userRouter;
