@@ -242,12 +242,57 @@ getAllPermissions() {
     };
   },
 
-  deletePermission(id) {
-    return {
-      queryString: `DELETE FROM tbl_permission_master WHERE n_id = $1`,
-      arr: [id],
-    };
-  },
+deletePermissionAssignments(id) {
+  return {
+    queryString: `DELETE FROM tbl_role_permissions WHERE permission_id = $1`,
+    arr: [id],
+  };
+},
+
+deletePermission(id) {
+  return {
+    queryString: `DELETE FROM tbl_permission_master WHERE n_id = $1`,
+    arr: [id],
+  };
+},
+assignPermission(data) {
+  return {
+    queryString: `
+      INSERT INTO tbl_role_permissions (role_id, permission_id)
+      VALUES ($1, $2)
+      RETURNING *;
+    `,
+    arr: [data.role_id, data.permission_id],
+  };
+},
+// Add these two methods to your userSqlc.js export default object
+
+getPermissionsByRole(data) {
+  return {
+    queryString: `
+      SELECT 
+        rp.id,
+        rp.role_id,
+        rp.permission_id,
+        pm.s_permission_name as permission_name
+      FROM tbl_role_permissions rp
+      INNER JOIN tbl_permission_master pm ON rp.permission_id = pm.n_id
+      WHERE rp.role_id = $1
+      ORDER BY pm.s_permission_name ASC
+    `,
+    arr: [data.roleId],
+  };
+},
+
+unassignPermission(data) {
+  return {
+    queryString: `
+      DELETE FROM tbl_role_permissions 
+      WHERE role_id = $1 AND permission_id = $2
+    `,
+    arr: [data.role_id, data.permission_id],
+  };
+},
 
 
 };

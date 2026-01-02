@@ -493,20 +493,89 @@ async createPermission(req, res) {
   }
 },
 
+// Replace your deletePermission function in userController.js with this:
+
 async deletePermission(req, res) {
   try {
     const { id } = req.params;
 
-    await dbqueryexecute.executeSelectObj(
-      userSqlc.deletePermission(id),
-      pool
-    );
+    if (!id) {
+      return res.status(400).json({ error: "Permission ID is required" });
+    }
+
+    // First, delete all role-permission assignments for this permission
+    const deleteAssignmentsQuery = userSqlc.deletePermissionAssignments(id);
+    await dbqueryexecute.executeSelectObj(deleteAssignmentsQuery, pool);
+
+    // Then, delete the permission itself
+    const deletePermissionQuery = userSqlc.deletePermission(id);
+    await dbqueryexecute.executeSelectObj(deletePermissionQuery, pool);
 
     res.status(200).json({ message: "Permission deleted successfully" });
   } catch (err) {
     console.error("DELETE PERMISSION ERROR:", err);
-    res.status(500).json({ error: "Failed to delete permission" });
+    res.status(500).json({ 
+      error: "Failed to delete permission",
+      details: err.message 
+    });
   }
 },
 
+async assignPermission(req, res) {
+  try {
+    const { role_id, permission_id } = req.body;
+
+    if (!role_id || !permission_id) {
+      return res.status(400).json({ error: "Role and Permission required" });
+    }
+
+    // ✅ FIX: Pass 'pool' as the second argument
+    await dbqueryexecute.executeSelectObj(
+      userSqlc.assignPermission({ role_id, permission_id }),
+      pool  // <-- This was missing!
+    );
+
+    res.status(201).json({ message: "Permission assigned successfully" });
+  } catch (err) {
+    console.error("ASSIGN PERMISSION ERROR:", err);
+    res.status(500).json({ error: "Failed to assign permission" });
+  }
+},
+// Add these two methods to your userController.js
+
+async getPermissionsByRole(req, res) {
+  try {
+    const { roleId } = req.params;
+
+    if (!roleId) {
+      return res.status(400).json({ error: "Role ID is required" });
+    }
+
+    const query = userSqlc.getPermissionsByRole({ roleId });
+    const result = await dbqueryexecute.executeSelectObj(query, pool);
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("GET PERMISSIONS BY ROLE ERROR:", err);
+    res.status(500).json({ error: "Failed to fetch role permissions" });
+  }
+},
+
+async unassignPermission(req, res) {
+  try {
+    const { role_id, permission_id } = req.body;
+
+    if (!role_id || !permission_id) {
+      return res.status(400).json({ error: "Role and Permission required" });
+    }
+
+    const query = userSqlc.unassignPermission({ role_id, permission_id });
+    await dbqueryexecute.executeSelectObj(query, pool);
+
+    res.status(200).json({ message: "Permission unassigned successfully" });
+  } catch (err) {
+    console.error("UNASSIGN PERMISSION ERROR:", err);
+    res.status(500).json({ error: "Failed to unassign permission" });
+  }
+},
 };
