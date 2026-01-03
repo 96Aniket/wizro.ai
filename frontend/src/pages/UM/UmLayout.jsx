@@ -4,6 +4,7 @@ import { Outlet, NavLink, Link } from 'react-router-dom';
 
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 
 const UmLayout = () => {
   const { getUmNavigationItems } = useAuth();
@@ -50,7 +51,7 @@ const UmLayout = () => {
                 Ctrl+K
               </span>
             </div>
-
+              <ThemeToggle/>
             {/* Create Task */}
             <Link
               to="/pm/create"

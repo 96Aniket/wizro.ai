@@ -173,10 +173,12 @@ export default function UmPermissionPage() {
   const allSelected = selectedPermissions.length === availablePermissions.length && availablePermissions.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Role & Permission Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Role & Permission Management
+          </h1>
           <Button onClick={() => setIsManageOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Manage Permissions
@@ -185,8 +187,8 @@ export default function UmPermissionPage() {
 
         <div className="grid grid-cols-12 gap-6">
           {/* LEFT SIDE - ROLES */}
-          <div className="col-span-4 bg-white rounded-lg shadow p-4">
-            <h2 className="text-lg font-semibold mb-4">Roles</h2>
+          <div className="col-span-4 bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Roles</h2>
             <div className="space-y-2">
               {roles.map((role) => (
                 <div
@@ -194,8 +196,8 @@ export default function UmPermissionPage() {
                   onClick={() => setSelectedRole(role)}
                   className={`p-3 rounded-lg cursor-pointer transition-colors ${
                     selectedRole?.n_id === role.n_id
-                      ? 'bg-blue-100 border-2 border-blue-500'
-                      : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                      ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-500'
+                      : 'bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border-2 border-transparent'
                   }`}
                 >
                   <div className="font-medium">{role.s_role_name}</div>
@@ -208,13 +210,13 @@ export default function UmPermissionPage() {
           </div>
 
           {/* RIGHT SIDE - ASSIGNED PERMISSIONS */}
-          <div className="col-span-8 bg-white rounded-lg shadow p-4">
+          <div className="col-span-8 bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
             {selectedRole ? (
               <>
                 <div className="flex justify-between items-center mb-4">
                   <div>
-                    <h2 className="text-lg font-semibold">Permissions for "{selectedRole.s_role_name}"</h2>
-                    <p className="text-sm text-gray-500">{rolePermissions.length} permission(s) assigned</p>
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Permissions for "{selectedRole.s_role_name}"</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{rolePermissions.length} permission(s) assigned</p>
                   </div>
                   <Button onClick={() => setIsAssignOpen(true)}>
                     <Plus className="w-4 h-4 mr-2" />
@@ -223,7 +225,7 @@ export default function UmPermissionPage() {
                 </div>
 
                 {rolePermissions.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
+                  <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                     <p className="mb-2">No permissions assigned yet</p>
                     <Button variant="outline" onClick={() => setIsAssignOpen(true)}>
                       Assign First Permission
@@ -236,11 +238,11 @@ export default function UmPermissionPage() {
                       .map((perm) => (
                         <div
                           key={perm.permission_id}
-                          className="border-2 border-gray-200 p-3 rounded-lg flex justify-between items-center hover:border-gray-300 transition-colors"
+                          className="border-2 border-gray-200 dark:border-gray-700 p-3 rounded-lg flex justify-between items-center hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-900 transition-colors"
                         >
                           <div>
                             <div className="font-medium">{perm.permission_name}</div>
-                            <div className="text-xs text-green-600 mt-1">Active</div>
+                            <div className="text-xs text-green-600 dark:text-green-400 mt-1">Active</div>
                           </div>
                           <Button
                             size="sm"
@@ -264,7 +266,7 @@ export default function UmPermissionPage() {
 
       {/* MANAGE PERMISSIONS DIALOG */}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <DialogHeader>
             <DialogTitle>Manage Permissions</DialogTitle>
             <DialogDescription>Create or remove system permissions.</DialogDescription>
@@ -282,7 +284,7 @@ export default function UmPermissionPage() {
           <div className="mt-4 max-h-96 overflow-y-auto">
             {permissions.map((p) => (
               <div key={p.n_id} className="flex justify-between items-center py-2 border-b">
-                <span>{p.s_permission_name}</span>
+                <span className="text-gray-900 dark:text-gray-100">{p.s_permission_name}</span>
                 <Button size="sm" variant="destructive" onClick={() => deletePermission(p.n_id)}>
                   <Trash2 size={14} />
                 </Button>
@@ -300,7 +302,7 @@ export default function UmPermissionPage() {
           if (!open) setSelectedPermissions([]);
         }}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <DialogHeader>
             <DialogTitle>Assign Permissions</DialogTitle>
             <DialogDescription>
@@ -333,8 +335,8 @@ export default function UmPermissionPage() {
                       onClick={() => handlePermissionToggle(perm.n_id)}
                       className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
                         selectedPermissions.includes(perm.n_id)
-                          ? 'bg-blue-50 border-blue-500'
-                          : 'bg-white border-gray-200 hover:border-gray-300'
+                          ? 'bg-blue-50 dark:bg-blue-900/40 border-blue-500'
+                          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                       }`}
                     >
                       <input
@@ -346,7 +348,7 @@ export default function UmPermissionPage() {
                       />
                       <div className="flex-1">
                         <div className="font-medium">{perm.s_permission_name}</div>
-                        <div className="text-xs text-gray-500">Permission ID: {perm.n_id}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Permission ID: {perm.n_id}</div>
                       </div>
                     </div>
                   ))}
@@ -355,8 +357,8 @@ export default function UmPermissionPage() {
             )}
           </div>
 
-          <div className="flex justify-between items-center mt-4 pt-4 border-t">
-            <span className="text-sm text-gray-600">
+          <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {selectedPermissions.length > 0 && `${selectedPermissions.length} permission(s) will be assigned`}
             </span>
             <div className="flex gap-2">

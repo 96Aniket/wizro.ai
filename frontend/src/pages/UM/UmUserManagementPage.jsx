@@ -286,13 +286,17 @@ export default function UmUserManagementPage() {
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Team Members</h1>
-            <p className="text-sm text-gray-500">Manage users and assigned roles</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Team Members
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Manage users and assigned roles
+            </p>
           </div>
 
           <div className="flex gap-2">
@@ -308,12 +312,12 @@ export default function UmUserManagementPage() {
         </div>
 
         {/* ERROR MESSAGE */}
-        {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+        {error && <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">{error}</div>}
 
         {/* LOADING STATE */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">Loading users...</p>
+            <p className="text-gray-500 dark:text-gray-400">Loading users...</p>
           </div>
         ) : users.length === 0 ? (
           <div className="text-center py-12">
@@ -327,17 +331,21 @@ export default function UmUserManagementPage() {
               return (
                 <div
                   key={user.n_user_id}
-                  className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition"
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md dark:hover:shadow-lg transition"
                 >
                   <div className="flex justify-between">
                     <div>
-                      <h3 className="font-semibold text-lg">{user.s_full_name}</h3>
-                      <p className="text-sm text-gray-500">{user.s_email}</p>
+                      <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+                        {user.s_full_name}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {user.s_email}
+                      </p>
                     </div>
-                    <Badge className={`${statusBadge.color} h-fit`}>{statusBadge.label}</Badge>
+                    <Badge className={`${statusBadge.color} h-fit text-xs px-2 py-0.5`}>{statusBadge.label}</Badge>
                   </div>
 
-                  <div className="mt-3 text-sm text-gray-600 space-y-1">
+                  <div className="mt-3 text-sm text-gray-600 dark:text-gray-300 space-y-1">
                     <p>
                       <strong>Role:</strong> {getRoleName(user.n_role)}
                     </p>
@@ -369,7 +377,7 @@ export default function UmUserManagementPage() {
           if (!open) resetForm();
         }}
       >
-        <DialogContent className="rounded-xl">
+        <DialogContent className="rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <DialogHeader>
             <DialogTitle>{isEdit ? 'Update User' : 'Create User'}</DialogTitle>
             <DialogDescription>{isEdit ? 'Modify user details' : 'Add a new team member'}</DialogDescription>
@@ -396,7 +404,7 @@ export default function UmUserManagementPage() {
               />
             )}
             <select
-              className="w-full h-10 rounded-md border px-3 text-sm"
+              className="w-full h-10 rounded-md border px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
               value={form.n_role}
               onChange={(e) => setForm({ ...form, n_role: e.target.value })}
             >
@@ -408,7 +416,7 @@ export default function UmUserManagementPage() {
               ))}
             </select>
             <select
-              className="w-full h-10 rounded-md border px-3 text-sm"
+              className="w-full h-10 rounded-md border px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
               value={form.n_status}
               onChange={(e) => setForm({ ...form, n_status: e.target.value })}
             >
