@@ -1,5 +1,5 @@
-import pool from "../config/config.js";
-import dbqueryexecute from "../utils/dbqueryexecute.js";
+import pool from "../../config/config.js";
+import dbqueryexecute from "../../utils/dbqueryexecute.js";
  
 /* ================= FETCH ================= */
  

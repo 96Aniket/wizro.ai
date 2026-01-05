@@ -7,7 +7,7 @@ import {
   rejectExpenseById,
   fetchPendingExpenses,
   deleteExpenseById,
-} from '../services/fm.expense.service.js';
+} from '../routes/services/fm.expense.servics';
 
 /* ================= GET ALL EXPENSES ================= */
 
