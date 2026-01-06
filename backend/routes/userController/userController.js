@@ -85,7 +85,6 @@ async login(req, res) {
     const payload = {
       id: userRow.n_user_id,
       role: userRow.n_role,
-      empID: userRow.n_user_id,
     };
 
     const accessToken = signAccess(payload);
@@ -194,7 +193,6 @@ async refreshToken(req, res) {
     const payload = {
       id: userRow.n_user_id,
       role: userRow.n_role,
-      empID: userRow.n_user_id,
     };
 
     const accessToken = signAccess(payload);
@@ -293,7 +291,8 @@ async refreshToken(req, res) {
     }
   },
 
-  // ==================== USER MANAGEMENT ====================
+ // ==================== USER MANAGEMENT ====================
+
   async getUsers(req, res) {
     try {
       const query = userSqlc.getAllUsers();
@@ -312,6 +311,31 @@ async refreshToken(req, res) {
     }
   },
 
+  async getUserById(req, res) {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return res.status(400).json({ error: 'User ID is required' });
+      }
+
+      const query = userSqlc.getUserWithDocuments({ n_user_id: parseInt(id) });
+      const result = await dbqueryexecute.executeSelectObj(query, pool);
+
+      if (result.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.status(200).json(result[0]);
+    } catch (err) {
+      console.error('❌ GET USER BY ID ERROR:', err);
+      res.status(500).json({
+        error: 'Failed to fetch user',
+        details: err.message,
+      });
+    }
+  },
+
   async createUser(req, res) {
     try {
       const {
@@ -321,6 +345,11 @@ async refreshToken(req, res) {
         n_role,
         n_status,
         d_joining_date,
+        s_aadhar_card_no,
+        s_pan_card_no,
+        s_bank_name,
+        s_bank_account_no,
+        s_bank_ifsc_code,
       } = req.body;
 
       console.log('📝 CREATE USER Request:', {
@@ -329,6 +358,7 @@ async refreshToken(req, res) {
         n_role,
         n_status,
         d_joining_date,
+        files: req.files,
       });
 
       // Validation
@@ -340,7 +370,7 @@ async refreshToken(req, res) {
         !n_status ||
         !d_joining_date
       ) {
-        return res.status(400).json({ error: 'All fields are required' });
+        return res.status(400).json({ error: 'All required fields must be provided' });
       }
 
       // Check duplicate email
@@ -356,6 +386,33 @@ async refreshToken(req, res) {
       // Hash password
       const hashedPassword = await bcrypt.hash(s_password, 10);
 
+      const fileData = {};
+
+      if (req.files) {
+        const fileFields = [
+          "b_aadhar_card_img",
+          "b_pan_card_img",
+          "b_passport_photo",
+          "b_10th_mark_sheet",
+          "b_12th_mark_sheet",
+          "b_degree_mark_sheet",
+          "b_certificates",
+          "b_professional_certifications",
+          "b_offer_letter",
+          "b_experience_letter",
+          "b_salary_slips",
+          "b_bank_passbook_copy",
+          "b_resume_cv",
+        ];
+
+        fileFields.forEach((field) => {
+          if (req.files[field]?.[0]) {
+            fileData[field] = req.files[field][0].buffer;
+          }
+        });
+      }
+
+
       const query = userSqlc.createUser({
         s_full_name,
         s_email,
@@ -363,6 +420,12 @@ async refreshToken(req, res) {
         n_role: parseInt(n_role),
         n_status: parseInt(n_status) || 1,
         d_joining_date,
+        s_aadhar_card_no,
+        s_pan_card_no,
+        s_bank_name,
+        s_bank_account_no,
+        s_bank_ifsc_code,
+        ...fileData,
       });
 
       console.log('🔍 CREATE Query:', query);
@@ -391,6 +454,11 @@ async refreshToken(req, res) {
         n_role,
         n_status,
         d_joining_date,
+        s_aadhar_card_no,
+        s_pan_card_no,
+        s_bank_name,
+        s_bank_account_no,
+        s_bank_ifsc_code,
       } = req.body;
 
       if (!n_user_id) {
@@ -413,13 +481,44 @@ async refreshToken(req, res) {
         }
       }
 
+      // Process file uploads
+      const fileData = {};
+      if (req.files) {
+        const fileMapping = {
+        b_aadhar_card_img: 'b_aadhar_card_img',
+        b_pan_card_img: 'b_pan_card_img',
+        b_passport_photo: 'b_passport_photo',
+        b_10th_mark_sheet: 'b_10th_mark_sheet',
+        b_12th_mark_sheet: 'b_12th_mark_sheet',
+        b_degree_mark_sheet: 'b_degree_mark_sheet',
+        b_certificates: 'b_certificates',
+        b_professional_certifications: 'b_professional_certifications',
+        b_offer_letter: 'b_offer_letter',
+        b_experience_letter: 'b_experience_letter',
+        b_salary_slips: 'b_salary_slips',
+        b_bank_passbook_copy: 'b_bank_passbook_copy',
+        b_resume_cv: 'b_resume_cv',
+      };
+        Object.entries(fileMapping).forEach(([fieldName, dbColumn]) => {
+        if (req.files?.[fieldName]?.[0]) {
+          fileData[dbColumn] = req.files[fieldName][0].buffer;
+        }
+      });
+      }
+
       const query = userSqlc.updateUser({
         n_user_id: parseInt(n_user_id),
         s_full_name,
         s_email,
         n_role: parseInt(n_role),
-        n_status: n_status || 'Active',
+        n_status: n_status || 1,
         d_joining_date,
+        s_aadhar_card_no,
+        s_pan_card_no,
+        s_bank_name,
+        s_bank_account_no,
+        s_bank_ifsc_code,
+        ...fileData,
       });
 
       const result = await dbqueryexecute.executeSelectObj(query, pool);
@@ -450,6 +549,46 @@ async refreshToken(req, res) {
       res.status(500).json({ error: 'Failed to delete user' });
     }
   },
+
+  async downloadDocument(req, res) {
+    try {
+      const { id, docType } = req.params;
+
+      if (!id || !docType) {
+        return res.status(400).json({ error: 'User ID and document type required' });
+      }
+
+      const query = userSqlc.getUserWithDocuments({ n_user_id: parseInt(id) });
+      const result = await dbqueryexecute.executeSelectObj(query, pool);
+
+      if (result.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const user = result[0];
+      const documentBuffer = user[docType];
+
+      if (!documentBuffer) {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+
+      // Determine content type based on file signature
+      let contentType = 'application/octet-stream';
+      const firstBytes = documentBuffer.slice(0, 4).toString('hex');
+
+      if (firstBytes.startsWith('ffd8ff')) contentType = 'image/jpeg';
+      else if (firstBytes.startsWith('89504e47')) contentType = 'image/png';
+      else if (firstBytes.startsWith('25504446')) contentType = 'application/pdf';
+
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `attachment; filename="${docType}_${id}"`);
+      res.send(documentBuffer);
+    } catch (err) {
+      console.error('DOWNLOAD DOCUMENT ERROR:', err);
+      res.status(500).json({ error: 'Failed to download document' });
+    }
+  },
+
 
   async createRole(req, res) {
     try {
