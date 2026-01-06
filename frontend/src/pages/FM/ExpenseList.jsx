@@ -79,6 +79,31 @@ const ExpenseList = () => {
       alert("Failed to delete expense");
     }
   };
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
+
+  const getApproverLabel = (role) => {
+    switch (role) {
+      case 1:
+        return "Admin";
+      case 4:
+        return "HR";
+      case 2:
+        return "Project Manager";
+      default:
+        return "";
+    }
+  };
+
 
   /* ================= UI ================= */
 
@@ -119,8 +144,16 @@ const ExpenseList = () => {
                 <td className="px-4 py-3">{exp.expense_type}</td>
                 <td className="px-4 py-3">{exp.expense_title}</td>
                 <td className="px-4 py-3 font-medium">₹{exp.amount}</td>
-                <td className="px-4 py-3">{exp.expense_date}</td>
-                <td className="px-4 py-3">{exp.approval_status}</td>
+                <td className="px-4 py-3">
+                  {formatDate(exp.expense_date)}
+                </td>
+
+                <td className="px-4 py-3">
+                  {exp.approval_status === "APPROVED" && exp.approved_by_role
+                    ? `Approved by ${getApproverLabel(exp.approved_by_role)}`
+                    : exp.approval_status}
+                </td>
+
 
                 {/* Reason column */}
                 <td className="px-4 py-3">

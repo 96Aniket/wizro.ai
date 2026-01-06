@@ -4,11 +4,16 @@ import pool from "../config/config.js";
  
 export const fetchAllExpenses = async () => {
   return pool.query(`
-    SELECT *
-    FROM tbl_fm_expense_master
-    ORDER BY created_at DESC
+    SELECT 
+      e.*,
+      u.n_role AS approved_by_role
+    FROM tbl_fm_expense_master e
+    LEFT JOIN tbl_users u
+      ON e.approved_by = u.n_user_id
+    ORDER BY e.created_at DESC
   `);
 };
+
  
 export const fetchAllEmployees = async () => {
   return pool.query(`
@@ -25,15 +30,19 @@ export const fetchAllEmployees = async () => {
 export const fetchExpensesByEmployee = async (empID) => {
   return pool.query(
     `
-    SELECT *
-    FROM tbl_fm_expense_master
-    WHERE employee_id = $1
-       OR created_by = $1
-    ORDER BY created_at DESC
+    SELECT 
+      e.*,
+      u.n_role AS approved_by_role
+    FROM tbl_fm_expense_master e
+    LEFT JOIN tbl_users u
+      ON e.approved_by = u.n_user_id
+    WHERE e.created_by = $1
+    ORDER BY e.created_at DESC
     `,
     [empID]
   );
 };
+
 
  
 /* ================= INSERT ================= */
