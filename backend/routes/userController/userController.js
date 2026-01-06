@@ -85,6 +85,7 @@ async login(req, res) {
     const payload = {
       id: userRow.n_user_id,
       role: userRow.n_role,
+      empID: userRow.n_user_id,
     };
 
     const accessToken = signAccess(payload);
@@ -193,6 +194,7 @@ async refreshToken(req, res) {
     const payload = {
       id: userRow.n_user_id,
       role: userRow.n_role,
+      empID: userRow.n_user_id,
     };
 
     const accessToken = signAccess(payload);

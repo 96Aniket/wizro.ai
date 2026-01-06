@@ -61,33 +61,38 @@ const hasPermission = (permissionName) => {
   }, []);
 
   // ================= LOGIN =================
-  const login = async (data) => {
-    setLoading(true);
-    try {
-      const res = await axiosInstance.post('/user/login', data, {
-        withCredentials: true,
-      });
+const login = async (data) => {
+  setLoading(true);
+  try {
+    const res = await axiosInstance.post('/user/login', data, {
+      withCredentials: true,
+    });
 
-      setAccessToken(res.data.accessToken);
+    setAccessToken(res.data.accessToken);
 
-      setUser({
-        email: res.data.email,
-        empID: res.data.empID,
-        fullName: res.data.fullName,
-        role: res.data.role,
-        permissions: res.data.permissions || [],
-      });
+    const userObj = {
+      email: res.data.email,
+      empID: res.data.empID,
+      fullName: res.data.fullName,
+      role: res.data.role,
+      permissions: res.data.permissions || [],
+    };
 
-      setIsAuthenticated(true);
-      toast.success(`Welcome back, ${res.data.fullName}!`);
-      return 200;
-    } catch (error) {
-      toast.error(error.response?.data?.Mess || 'Something went wrong!');
-      return 400;
-    } finally {
-      setLoading(false);
-    }
-  };
+    setUser(userObj);
+    setIsAuthenticated(true);
+
+    toast.success(`Welcome back, ${res.data.fullName}!`);
+
+    // ✅ VERY IMPORTANT
+    return { success: true };
+  } catch (error) {
+    toast.error(error.response?.data?.Mess || 'Invalid credentials');
+    return { success: false };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // ================= REGISTER =================
   const register = async (data) => {

@@ -10,41 +10,27 @@ import { useAuth } from '@/context/AuthContext';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({
-    email: 'admin@kosqu.com',
-    password: '123',
+    email: '',
+    password: '',
   });
 
-  const { login, loading, user } = useAuth();
-
-
+  const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await login(credentials);
 
-    if (res !== 400) {
-      // role-based redirect
-      if (user.role === 3) {
-        navigate('/employee/fm/dashboard'); // Employee
-      } else if (user.role === 4) {
-        navigate('/hr/fm/dashboard'); // HR
-      } else if (user.role === 2) {
-        navigate('/pm/fm/dashboard'); // PM
-      } else if (user.role === 1) {
-        navigate('/fm/dashboard'); // Admin
-      }
-}
+    const result = await login(credentials);
 
+    // ✅ ONLY auth success check
+    if (result?.success) {
+      navigate('/main', { replace: true }); // ✅ correct route
+    }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    setCredentials((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -56,20 +42,26 @@ const LoginPage = () => {
               <User className="w-6 h-6 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
-          <CardDescription className="text-center">Sign in to your account to continue</CardDescription>
+
+          <CardTitle className="text-2xl font-bold text-center">
+            Welcome Back
+          </CardTitle>
+          <CardDescription className="text-center">
+            Sign in to your account to continue
+          </CardDescription>
         </CardHeader>
+
         <CardContent>
-          <div onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* EMAIL */}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label>Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  id="email"
                   name="email"
-                  type="text"
-                  placeholder="Enter your Email"
+                  type="email"
+                  placeholder="Enter your email"
                   value={credentials.email}
                   onChange={handleInputChange}
                   className="pl-10"
@@ -79,12 +71,12 @@ const LoginPage = () => {
               </div>
             </div>
 
+            {/* PASSWORD */}
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label>Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  id="password"
                   name="password"
                   type="password"
                   placeholder="Enter your password"
@@ -98,12 +90,10 @@ const LoginPage = () => {
             </div>
 
             <Button
-              onClick={(e) => {
-                handleSubmit(e);
-              }}
+              type="submit"
               className="w-full"
-              disabled={loading}
               size="lg"
+              disabled={loading}
             >
               {loading ? (
                 <>
@@ -114,7 +104,7 @@ const LoginPage = () => {
                 'Sign In'
               )}
             </Button>
-          </div>
+          </form>
         </CardContent>
       </Card>
     </div>
