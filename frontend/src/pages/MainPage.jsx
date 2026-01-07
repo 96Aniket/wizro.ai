@@ -97,7 +97,7 @@ const allModules = [
     id: 6,
     title: 'Finance Management',
     description: 'Handle invoices, payments, expenses, and budgeting',
-    keyFeatures: ['Dashboard', 'Invoices', 'Payments', 'Expenses', 'Budget & Costing'],
+    keyFeatures: ['Dashboard','Exp-Management', 'InvoiceManagement', 'All Expenses', 'Payments','Budget','Reports'],
     permission: 'FINANCE_MANAGEMENT',
     route: '/fm/dashboard',
     icon: Receipt,
