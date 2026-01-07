@@ -3,54 +3,80 @@ import { NavLink, Outlet } from "react-router-dom";
 
 const FinanceLayout = () => {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f7f9fc]">
       {/* TOP FINANCE NAVBAR */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-900">
+      <div className="border-b border-[#e5e9f2] bg-[#f7f9fc]">
+        <div className="px-6 h-[64px] flex items-center justify-between">
+
+          {/* Logo */}
+          <h1 className="text-xl font-semibold text-[#00a8a8]">
             KosquFinance
           </h1>
 
-          {/* ✅ IMPORTANT: RELATIVE PATHS */}
-          <nav className="flex gap-6 text-sm font-medium">
+          {/* Navigation */}
+          <nav className="flex items-center gap-8 text-[15px]">
             <NavLink
-              to="dashboard"
-              className="text-slate-600 hover:text-blue-600"
+              to="/fm/dashboard"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#00a8a8] font-semibold"
+                  : "text-[#1f2937] hover:text-[#00a8a8]"
+              }
             >
               Dashboard
             </NavLink>
 
             <NavLink
-              to="expenses"
-              className="text-slate-600 hover:text-blue-600"
+              to="/fm/expenses"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#00a8a8] font-semibold"
+                  : "text-[#1f2937] hover:text-[#00a8a8]"
+              }
             >
               Expense Management
             </NavLink>
 
             <NavLink
-              to="invoices"
-              className="text-slate-600 hover:text-blue-600"
+              to="/fm/invoices"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#00a8a8] font-semibold"
+                  : "text-[#1f2937] hover:text-[#00a8a8]"
+              }
             >
               Invoice Management
             </NavLink>
 
             <NavLink
-              to="payments"
-              className="text-slate-600 hover:text-blue-600"
+              to="/fm/payments"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#00a8a8] font-semibold"
+                  : "text-[#1f2937] hover:text-[#00a8a8]"
+              }
             >
               Payments
             </NavLink>
 
             <NavLink
-              to="budget"
-              className="text-slate-600 hover:text-blue-600"
+              to="/fm/budget"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#00a8a8] font-semibold"
+                  : "text-[#1f2937] hover:text-[#00a8a8]"
+              }
             >
               Budget
             </NavLink>
 
             <NavLink
-              to="reports"
-              className="text-slate-600 hover:text-blue-600"
+              to="/fm/reports"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#00a8a8] font-semibold"
+                  : "text-[#1f2937] hover:text-[#00a8a8]"
+              }
             >
               Reports
             </NavLink>
@@ -63,6 +89,7 @@ const FinanceLayout = () => {
         <Outlet />
       </div>
     </div>
+
   );
 };
 
