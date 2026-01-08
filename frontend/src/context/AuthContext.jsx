@@ -200,10 +200,7 @@ const getVmNavigationItems = () => {
 
   return [
     { id: 'dashboard', name: 'Dashboard', href: '/vm/dashboard' },
-    { id: 'create', name: 'Create', href: '/vm/create' },
     { id: 'invoice', name: 'Invoice', href: '/vm/invoice' },
-    { id: 'list', name: 'List', href: '/vm/list' },
-    { id: 'payment', name: 'Payment', href: '/vm/payment' },
     { id: 'view', name: 'View', href: '/vm/view' },
   ];
 };

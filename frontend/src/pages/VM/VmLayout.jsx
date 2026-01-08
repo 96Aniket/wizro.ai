@@ -59,13 +59,13 @@ const VmLayout = () => {
             <ThemeToggle />
 
             {/* Create VM */}
-            <Link
+            {/* <Link
               to="/vm/create"
               className="flex items-center gap-2 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
             >
               <Plus className="w-4 h-4" />
               <span>Create VM</span>
-            </Link>
+            </Link> */}
 
             {/* User avatar */}
             <div className="w-8 h-8 bg-[var(--color-chart-4)] rounded-full flex items-center justify-center font-medium text-sm text-white">
