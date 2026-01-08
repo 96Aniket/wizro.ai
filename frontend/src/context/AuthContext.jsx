@@ -193,6 +193,15 @@ const getFmNavigationItems = () => {
     { id: 'approvals', name: 'Expense Approvals', href: '/fm/expenses/approvals' },
   ];
 };
+// ✅ VM navigation – DB driven, NO hardcoded roles
+const getVmNavigationItems = () => {
+  if (!hasPermission('VENDOR_MANAGEMENT')) return [];
+
+  return [
+    { id: 'dashboard', name: 'Dashboard', href: '/vm/dashboard' },
+  ];
+};
+
 
   // ================= CONTEXT VALUE =================
   const value = {
@@ -213,6 +222,7 @@ const getFmNavigationItems = () => {
     getPmNavigationItems,
     getTmNavigationItems,
     getFmNavigationItems,
+    getVmNavigationItems,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

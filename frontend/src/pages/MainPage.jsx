@@ -116,7 +116,7 @@ const allModules = [
       'Contract Upload',
     ],
     permission: 'VENDOR_MANAGEMENT',
-    route: '/vendor/dashboard',
+    route: '/vm/dashboard',
     icon: Briefcase,
     color: 'teal',
   },

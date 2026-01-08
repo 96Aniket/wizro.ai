@@ -12,6 +12,7 @@ import PmRoutes from './PmRoutes';
 import TmRoutes from './TmRoutes';
 import UmRoutes from './UmRoutes';
 import FMRoutes from './FMRoutes';
+import VmRoutes from './VmRoutes';
 
 
 
@@ -29,6 +30,7 @@ const routes = [
   AmRoutes,
   UmRoutes,
   ...FMRoutes,
+  VmRoutes,
 
   { path: '*', element: <NotFoundPage /> },
 ];
