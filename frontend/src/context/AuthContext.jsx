@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import axiosInstance, { setAccessToken } from '@/lib/axiosConfig';
+import { href } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -199,6 +200,11 @@ const getVmNavigationItems = () => {
 
   return [
     { id: 'dashboard', name: 'Dashboard', href: '/vm/dashboard' },
+    { id: 'create', name: 'Create', href: '/vm/create' },
+    { id: 'invoice', name: 'Invoice', href: '/vm/invoice' },
+    { id: 'list', name: 'List', href: '/vm/list' },
+    { id: 'payment', name: 'Payment', href: '/vm/payment' },
+    { id: 'view', name: 'View', href: '/vm/view' },
   ];
 };
 
