@@ -13,6 +13,7 @@ const FinanceLayout = () => {
             KosquFinance
           </h1>
 
+
           {/* Navigation */}
           <nav className="flex items-center gap-8 text-[15px]">
             <NavLink
