@@ -33,9 +33,38 @@ const deleteVendorQuery = `
   RETURNING *;
 `;
 
+/* ===========================
+   QUOTATION SQL
+=========================== */
+
+const insertQuotationMasterQuery = `
+  INSERT INTO quotation_master
+  (vendor_code, bill_to_name, bill_to_address, quotation_date,
+   quotation_no, po_no, discount, is_interstate,
+   subtotal, total_tax, total)
+  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+  RETURNING quotation_id;
+`;
+
+const insertQuotationItemQuery = `
+  INSERT INTO quotation_items
+  (quotation_id, description, qty, price, amount)
+  VALUES ($1,$2,$3,$4,$5);
+`;
+
+const getAllQuotationsQuery = `
+  SELECT *
+  FROM quotation_master
+  ORDER BY created_at DESC;
+`;
+
+
 export default {
   insertVendorQuery,
   getAllVendorsQuery,
   updateVendorQuery,
   deleteVendorQuery,
+  insertQuotationMasterQuery,
+  insertQuotationItemQuery,
+  getAllQuotationsQuery,
 };

@@ -86,6 +86,76 @@ const getAllVendors = async (_req, res) => {
 };
 
 /* ===========================
+   QUOTATION FUNCTIONS
+=========================== */
+
+const saveQuotation = async (req, res) => {
+  try {
+    const {
+      vendorCode,
+      billToName,
+      billToAddress,
+      quotationDate,
+      quotationNo,
+      poNo,
+      discount,
+      isInterState,
+      subtotal,
+      totalTax,
+      total,
+      items,
+    } = req.body;
+
+    const masterResult = await pool.query(
+      vmSqlc.insertQuotationMasterQuery,
+      [
+        vendorCode,
+        billToName,
+        billToAddress,
+        quotationDate,
+        quotationNo,
+        poNo,
+        discount,
+        isInterState,
+        subtotal,
+        totalTax,
+        total,
+      ]
+    );
+
+    const quotationId = masterResult.rows[0].quotation_id;
+
+    for (const item of items) {
+      await pool.query(vmSqlc.insertQuotationItemQuery, [
+        quotationId,
+        item.desc,
+        item.qty,
+        item.price,
+        item.qty * item.price,
+      ]);
+    }
+
+    res.status(201).json({
+      message: "Quotation saved successfully",
+      quotationId,
+    });
+  } catch (err) {
+    console.error("SAVE QUOTATION ERROR:", err);
+    res.status(500).json({ message: "Error saving quotation" });
+  }
+};
+
+const getAllQuotations = async (_req, res) => {
+  try {
+    const result = await pool.query(vmSqlc.getAllQuotationsQuery);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("FETCH QUOTATIONS ERROR:", err);
+    res.status(500).json({ message: "Error fetching quotations" });
+  }
+};
+
+/* ===========================
    NEW: GET VENDOR BY CODE
 =========================== */
 const getVendorByCode = async (req, res) => {
@@ -171,4 +241,6 @@ export default {
   getVendorByCode, // 👈 NEW EXPORT
   updateVendor,
   deleteVendor,
+   saveQuotation,
+  getAllQuotations,
 };

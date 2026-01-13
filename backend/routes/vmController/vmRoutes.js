@@ -14,5 +14,9 @@ vmRouter.put("/vendors/:id", vmController.updateVendor);
 vmRouter.delete("/vendors/:id", vmController.deleteVendor);
 vmRouter.get("/vendors/code/:vendorCode", vmController.getVendorByCode);
 
+// Quotation APIs
+vmRouter.post("/quotation", vmController.saveQuotation);
+vmRouter.get("/quotation", vmController.getAllQuotations);
+
 
 export default vmRouter;

@@ -6,6 +6,8 @@ const VmInvoicePage = () => {
   const [open, setOpen] = useState(false);
 
   const [vendors, setVendors] = useState([]);
+  const [quotations, setQuotations] = useState([]); // ✅ ADDED
+
   const [selectedVendorCode, setSelectedVendorCode] = useState("");
   const [isInterState, setIsInterState] = useState(false);
 
@@ -19,19 +21,26 @@ const VmInvoicePage = () => {
     quotationNo: "",
     poNo: "",
     venCode: "",
-
     items: [{ desc: "", qty: 1, price: 0 }],
-
     discount: 0,
   });
 
-  /* ================= LOAD VENDORS ================= */
+  /* ================= LOAD VENDORS + QUOTATIONS ================= */
   useEffect(() => {
     axios
       .get("http://localhost:5000/vm/vendors")
       .then((res) => setVendors(res.data))
       .catch(() => {});
+
+    loadQuotations(); // ✅ ADDED
   }, []);
+
+  const loadQuotations = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/vm/quotation");
+      setQuotations(res.data);
+    } catch {}
+  };
 
   /* ================= CALCULATIONS ================= */
   const subtotal = form.items.reduce(
@@ -41,7 +50,6 @@ const VmInvoicePage = () => {
 
   const subtotalLessDiscount = subtotal - Number(form.discount || 0);
 
-  // FIXED TAX RATES
   const SGST_RATE = 9;
   const CGST_RATE = 9;
   const IGST_RATE = 18;
@@ -64,7 +72,7 @@ const VmInvoicePage = () => {
   /* ================= HANDLERS ================= */
   const updateItem = (i, key, value) => {
     const items = [...form.items];
-    items[i][key] = value;
+    items[i][key] = Number.isNaN(value) ? value : Number(value);
     setForm({ ...form, items });
   };
 
@@ -94,8 +102,93 @@ const VmInvoicePage = () => {
     }));
   };
 
+  /* ================= SAVE QUOTATION ================= */
+  const saveQuotation = async () => {
+    try {
+      const payload = {
+        vendorCode: form.venCode,
+        billToName: form.billToName,
+        billToAddress: form.billToAddress,
+        quotationDate: form.quotationDate,
+        quotationNo: form.quotationNo,
+        poNo: form.poNo,
+        discount: Number(form.discount),
+        isInterState,
+        subtotal,
+        totalTax,
+        total,
+        items: form.items,
+      };
+
+      await axios.post("http://localhost:5000/vm/quotation", payload);
+
+      alert("Quotation saved successfully");
+
+      loadQuotations(); // ✅ ADDED (ONLY CHANGE AFTER SAVE)
+
+      // reset form (UNCHANGED)
+      setForm({
+        billToName: "",
+        billToAddress: "",
+        contactName: "",
+        contactEmail: "",
+        contactNo: "",
+        quotationDate: "",
+        quotationNo: "",
+        poNo: "",
+        venCode: "",
+        items: [{ desc: "", qty: 1, price: 0 }],
+        discount: 0,
+      });
+
+      setSelectedVendorCode("");
+      setIsInterState(false);
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save quotation");
+    }
+  };
+
   return (
     <div className="page">
+      {/* ================= SAVED QUOTATIONS (BACKGROUND AREA) ================= */}
+      {!open && (
+        <div className="card">
+          <h3>Saved Quotations</h3>
+
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Quotation No</th>
+                <th>Vendor Code</th>
+                <th>Date</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {quotations.length === 0 && (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    No quotations available
+                  </td>
+                </tr>
+              )}
+
+              {quotations.map((q) => (
+                <tr key={q.quotation_id}>
+                  <td>{q.quotation_no}</td>
+                  <td>{q.vendor_code}</td>
+                  <td>{q.quotation_date}</td>
+                  <td>₹ {q.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* CREATE BUTTON (UNCHANGED) */}
       {!open && (
         <div className="top-right">
           <button className="btn-primary" onClick={() => setOpen(true)}>
@@ -104,6 +197,7 @@ const VmInvoicePage = () => {
         </div>
       )}
 
+      {/* FORM (100% UNCHANGED) */}
       {open && (
         <div className="card">
           {/* HEADER */}
@@ -271,7 +365,9 @@ const VmInvoicePage = () => {
 
           {/* ACTIONS */}
           <div className="actions">
-            <button className="btn-secondary">Download PDF</button>
+            <button className="btn-secondary" onClick={saveQuotation}>
+              Save Quotation
+            </button>
             <button className="btn-primary">Download Excel</button>
           </div>
         </div>

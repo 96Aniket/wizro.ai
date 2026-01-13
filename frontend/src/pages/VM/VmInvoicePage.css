@@ -265,3 +265,14 @@ select:focus {
   padding-top: 20px;
   border-top: 1px solid #e5e7eb;
 }
+
+.page {
+  position: relative; /* IMPORTANT */
+}
+
+.top-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
