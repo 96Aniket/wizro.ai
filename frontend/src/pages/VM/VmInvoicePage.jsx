@@ -42,6 +42,18 @@ const VmInvoicePage = () => {
     } catch {}
   };
 
+
+   /* ================= DATE FORMAT (ADDED) ================= */
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+
   /* ================= CALCULATIONS ================= */
   const subtotal = form.items.reduce(
     (sum, i) => sum + i.qty * i.price,
@@ -179,7 +191,7 @@ const VmInvoicePage = () => {
                 <tr key={q.quotation_id}>
                   <td>{q.quotation_no}</td>
                   <td>{q.vendor_code}</td>
-                  <td>{q.quotation_date}</td>
+                  <td>{formatDate(q.quotation_date)}</td>
                   <td>₹ {q.total}</td>
                 </tr>
               ))}
