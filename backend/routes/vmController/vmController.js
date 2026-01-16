@@ -155,6 +155,40 @@ const getAllQuotations = async (_req, res) => {
   }
 };
 
+
+/* ===========================
+   NEW: GET QUOTATION BY ID
+=========================== */
+const getQuotationById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1️⃣ Get quotation master
+    const masterResult = await pool.query(
+      vmSqlc.getQuotationByIdQuery,
+      [id]
+    );
+
+    if (masterResult.rows.length === 0) {
+      return res.status(404).json({ message: "Quotation not found" });
+    }
+
+    // 2️⃣ Get quotation items
+    const itemsResult = await pool.query(
+      vmSqlc.getQuotationItemsByQuotationIdQuery,
+      [id]
+    );
+
+    res.json({
+      ...masterResult.rows[0],
+      items: itemsResult.rows,
+    });
+  } catch (err) {
+    console.error("GET QUOTATION BY ID ERROR:", err);
+    res.status(500).json({ message: "Error fetching quotation details" });
+  }
+};
+
 /* ===========================
    NEW: GET VENDOR BY CODE
 =========================== */
@@ -243,4 +277,5 @@ export default {
   deleteVendor,
    saveQuotation,
   getAllQuotations,
+  getQuotationById,
 };

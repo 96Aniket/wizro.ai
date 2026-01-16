@@ -6,11 +6,16 @@
   background: linear-gradient(180deg, #f8fafc, #eef2f7);
   min-height: 100vh;
   font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  position: relative; /* IMPORTANT (screen only) */
 }
 
 .top-right {
   text-align: right;
   margin-bottom: 16px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
 }
 
 /* ===============================
@@ -227,21 +232,6 @@ select:focus {
   color: #0f172a;
 }
 
-.tax-row {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
-}
-
-.tax-input {
-  width: 64px;
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  text-align: right;
-}
-
 .total-label {
   font-size: 16px;
   font-weight: 700;
@@ -266,13 +256,64 @@ select:focus {
   border-top: 1px solid #e5e7eb;
 }
 
-.page {
-  position: relative; /* IMPORTANT */
+/* ===============================
+   FORCE FULL PAGE PRINT (ROOT FIX)
+================================ */
+@media print {
+  html,
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  /* Kill any transform (VERY IMPORTANT) */
+  * {
+    transform: none !important;
+  }
+
+  /* Ensure page starts from top */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Main container */
+  .page {
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+    padding: 0 !important;
+  }
+
+  .card {
+    height: auto !important;
+    overflow: visible !important;
+    max-width: 100% !important;
+    page-break-inside: auto;
+  }
+
+  /* Allow multi-page tables */
+  table {
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .section {
+    page-break-inside: avoid;
+  }
+
+  /* Hide non-print UI */
+  .btn-primary,
+  .btn-secondary,
+  .btn-close,
+  .top-right {
+    display: none !important;
+  }
 }
 
-.top-right {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 10;
-}

@@ -18,5 +18,6 @@ vmRouter.get("/vendors/code/:vendorCode", vmController.getVendorByCode);
 vmRouter.post("/quotation", vmController.saveQuotation);
 vmRouter.get("/quotation", vmController.getAllQuotations);
 
+vmRouter.get("/quotation/:id", vmController.getQuotationById);
 
 export default vmRouter;

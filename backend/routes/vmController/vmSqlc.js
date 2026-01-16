@@ -57,6 +57,25 @@ const getAllQuotationsQuery = `
   FROM quotation_master
   ORDER BY created_at DESC;
 `;
+/* ===========================
+   NEW: VIEW QUOTATION
+=========================== */
+
+const getQuotationByIdQuery = `
+  SELECT *
+  FROM quotation_master
+  WHERE quotation_id = $1;
+`;
+
+const getQuotationItemsByQuotationIdQuery = `
+  SELECT
+    description AS desc,
+    qty,
+    price,
+    amount
+  FROM quotation_items
+  WHERE quotation_id = $1;
+`;
 
 
 export default {
@@ -67,4 +86,6 @@ export default {
   insertQuotationMasterQuery,
   insertQuotationItemQuery,
   getAllQuotationsQuery,
+   getQuotationByIdQuery,
+  getQuotationItemsByQuotationIdQuery,
 };
