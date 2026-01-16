@@ -13,7 +13,7 @@ const VmViewPage = () => {
   const [vendorData, setVendorData] = useState({
     vendorCode: "",
     companyName: "",
-    businessType: "",
+    vendorAddress: "",
     industry: "",
     registrationNumber: "",
     gstNumber: "",
@@ -55,7 +55,7 @@ const VmViewPage = () => {
     setVendorData({
       vendorCode: "",
       companyName: "",
-      businessType: "",
+      vendorAddress: "",
       industry: "",
       registrationNumber: "",
       gstNumber: "",
@@ -87,7 +87,7 @@ const VmViewPage = () => {
       `http://localhost:5000/vm/vendors/${editVendor.vendor_id}`,
       {
         companyName: editVendor.company_name,
-        businessType: editVendor.business_type,
+        vendorAddress: editVendor.vendor_address,
         industry: editVendor.industry,
         registrationNumber: editVendor.registration_number,
         gstNumber: editVendor.gst_number,
@@ -124,7 +124,7 @@ const VmViewPage = () => {
             <form onSubmit={handleSubmit} className="form-grid">
               <input name="vendorCode" placeholder="Vendor Code" required onChange={handleChange} />
               <input name="companyName" placeholder="Company Name" required onChange={handleChange} />
-              <input name="businessType" placeholder="Business Type" onChange={handleChange} />
+              <input name="vendorAddress" placeholder="Vendor Address" onChange={handleChange} />
               <input name="industry" placeholder="Industry" onChange={handleChange} />
               <input name="registrationNumber" placeholder="Registration Number" onChange={handleChange} />
               <input name="gstNumber" placeholder="GST Number" onChange={handleChange} />
@@ -152,7 +152,7 @@ const VmViewPage = () => {
           >
             <h4>{vendor.company_name}</h4>
             <p><strong>Industry:</strong> {vendor.industry}</p>
-            <p><strong>Type:</strong> {vendor.business_type}</p>
+            <p><strong>Address:</strong> {vendor.vendor_address}</p>
 
             <span className={`status-badge ${vendor.status === "Active" ? "active" : "inactive"}`}>
               {vendor.status}
@@ -169,7 +169,7 @@ const VmViewPage = () => {
 
             <div className="details-grid">
               <p><strong>Vendor Code:</strong> {selectedVendor.vendor_code}</p>
-              <p><strong>Business Type:</strong> {selectedVendor.business_type}</p>
+              <p><strong>Vendor Address:</strong> {selectedVendor.vendor_address}</p>
               <p><strong>Industry:</strong> {selectedVendor.industry}</p>
               <p><strong>Website:</strong> {selectedVendor.website}</p>
               <p><strong>Registration No:</strong> {selectedVendor.registration_number}</p>
@@ -215,7 +215,7 @@ const VmViewPage = () => {
 
             <form onSubmit={handleUpdate} className="form-grid">
               <input value={editVendor.company_name} onChange={(e) => setEditVendor({ ...editVendor, company_name: e.target.value })} />
-              <input value={editVendor.business_type} onChange={(e) => setEditVendor({ ...editVendor, business_type: e.target.value })} />
+              <input value={editVendor.vendor_address} onChange={(e) => setEditVendor({ ...editVendor, vendor_address: e.target.value })} />
               <input value={editVendor.industry} onChange={(e) => setEditVendor({ ...editVendor, industry: e.target.value })} />
               <input value={editVendor.registration_number} onChange={(e) => setEditVendor({ ...editVendor, registration_number: e.target.value })} />
               <input value={editVendor.gst_number} onChange={(e) => setEditVendor({ ...editVendor, gst_number: e.target.value })} />

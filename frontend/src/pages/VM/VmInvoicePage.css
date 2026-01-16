@@ -1,54 +1,109 @@
+/* ===============================
+   PAGE LAYOUT
+================================ */
 .page {
-  padding: 24px;
-  background: #f4f6f8;
+  padding: 32px;
+  background: linear-gradient(180deg, #f8fafc, #eef2f7);
   min-height: 100vh;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
 }
 
 .top-right {
   text-align: right;
+  margin-bottom: 16px;
 }
 
+/* ===============================
+   MAIN CARD
+================================ */
 .card {
-  background: #fff;
-  padding: 24px;
-  max-width: 1000px;
+  background: #ffffff;
+  padding: 32px;
+  max-width: 1100px;
   margin: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  border-radius: 14px;
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.08),
+    0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
+/* ===============================
+   CARD HEADER
+================================ */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 16px;
 }
 
+.card-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* ===============================
+   SECTION
+================================ */
 .section {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .section h4 {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
-/* INPUTS */
+/* ===============================
+   INPUTS
+================================ */
 .input,
-.textarea {
+.textarea,
+select {
   width: 100%;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus,
+.textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.input[readonly],
+.textarea[readonly] {
+  background: #f1f5f9;
+  color: #475569;
+  cursor: not-allowed;
 }
 
 .textarea {
-  min-height: 80px;
+  min-height: 90px;
+  resize: vertical;
 }
 
-/* GRID */
+/* ===============================
+   GRID SYSTEM
+================================ */
 .grid {
   display: grid;
-  gap: 10px;
+  gap: 14px;
 }
 
 .grid-3 {
@@ -59,99 +114,165 @@
   grid-template-columns: repeat(4, 1fr);
 }
 
-/* TABLE */
+/* ===============================
+   TABLE (SERVICE DETAILS)
+================================ */
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 12px;
+  font-size: 14px;
 }
 
-.table th,
+.table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 .table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
 }
 
 .table-input {
   width: 100%;
-  padding: 6px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
 }
 
-/* BUTTONS */
+/* ===============================
+   BUTTONS
+================================ */
 .btn-primary {
-  padding: 10px 18px;
-  background: #2563eb;
-  color: #fff;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
 }
 
 .btn-secondary {
-  padding: 8px 14px;
+  padding: 8px 16px;
   background: #e5e7eb;
+  color: #0f172a;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 12px;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
 }
 
 .btn-close {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
-  color: #ef4444;
+  color: #dc2626;
+  font-weight: 600;
 }
 
-/* CALCULATION */
+/* ===============================
+   CALCULATION BOX
+================================ */
 .calc-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  background: #f9fafb;
-  padding: 16px;
-  border-radius: 6px;
+  gap: 20px;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
 }
 
 .calc-left {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  font-weight: 500;
+  gap: 16px;
+  font-size: 14px;
+  color: #334155;
 }
 
 .calc-right {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   text-align: right;
+  font-size: 14px;
+  color: #0f172a;
 }
 
 .tax-row {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .tax-input {
-  width: 60px;
+  width: 64px;
   padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
   text-align: right;
 }
 
 .total-label {
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .total-value {
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1d4ed8;
 }
 
-/* ACTIONS */
+/* ===============================
+   ACTIONS
+================================ */
 .actions {
-  text-align: right;
-  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.page {
+  position: relative; /* IMPORTANT */
+}
+
+.top-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
 }
